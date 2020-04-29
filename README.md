@@ -42,3 +42,13 @@ gRPC is a modern open source high performance RPC framework that can run in any 
 - Server Streaming: clinent requests then server gives all the messages (HTTP/2)
 - Client Streaming: clinent opens pipe and gives messages and server reponses (HTTP/2)
 - Bidirectional Streaming: pipe is opened and work like que and consumer (HTTP/2)
+
+## Intellij
+
+- psvm
+
+## About setting 
+
+- gradle > Tasks > other > generateProto on src/main/proto/dummy/dummy.proto
+- preferences > editor > mouse > you can set ctrl + wheel to manage size of fonts
+- You can install gradle packages on Gradle tab on the right side
