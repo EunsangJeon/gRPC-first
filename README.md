@@ -46,6 +46,7 @@ gRPC is a modern open source high performance RPC framework that can run in any 
 ## Intellij
 
 - psvm
+- preferences > build, execution, deployment > build tools > gradle > build and run & run test using intellij 
 
 ## About setting 
 
