@@ -16,6 +16,8 @@ gRPC is a modern open source high performance RPC framework that can run in any 
 - gRPC servers are asynchronous
 - gRPC clients can be async or sync. Also clients can perform client side load balancing.
 - fun fact: Google has 10 BILLION gRPC requests being made per second internally(2020)
+- By default, gRPC strongly advocates for you to use SSL
+
 
 ## Repo Content
 
