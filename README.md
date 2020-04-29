@@ -13,6 +13,7 @@ It's binary which means it will be written and read so fast.
 gRPC is a modern open source high performance RPC framework that can run in any environment. It can efficiently connect services in and across data centers with pluggable support for load balancing, tracing, health checking and authentication. It is also applicable in last mile of distributed computing to connect devices, mobile applications and browsers to backend services.
 
 - https://grpc.io/
+- https://github.com/grpc/grpc-java
 - gRPC servers are asynchronous
 - gRPC clients can be async or sync. Also clients can perform client side load balancing.
 - fun fact: Google has 10 BILLION gRPC requests being made per second internally(2020)
