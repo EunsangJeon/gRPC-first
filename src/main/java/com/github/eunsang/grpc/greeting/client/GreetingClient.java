@@ -1,39 +1,146 @@
 package com.github.eunsang.grpc.greeting.client;
 
-import com.proto.dummy.DummyServiceGrpc;
-import com.proto.greet.GreetRequest;
-import com.proto.greet.GreetResponse;
-import com.proto.greet.GreetServiceGrpc;
-import com.proto.greet.Greeting;
+import com.proto.greet.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class GreetingClient {
 
-    public static void main(String[] args) {
-        System.out.println("Hello I'm a gRPC client");
+    private  ManagedChannel channel =
+            ManagedChannelBuilder.forAddress("localhost", 50051)
+            .usePlaintext() // only for dev to avoid secure setting
+            .build();
+    private Greeting greeting = Greeting.newBuilder()
+            .setFirstName("Eunsang")
+            .setLastName("Jeon")
+            .build();
+    private GreetServiceGrpc.GreetServiceBlockingStub greetSyncClient =
+            GreetServiceGrpc.newBlockingStub(channel);
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50051)
-                .usePlaintext() // only for dev to avoid secure setting
-                .build();
+    private GreetServiceGrpc.GreetServiceStub greetAsyncClient =
+            GreetServiceGrpc.newStub(channel);
 
-        // DummyServiceGrpc.DummyServiceBlockingStub syncClient = DummyServiceGrpc.newBlockingStub(channel);
-        // DummyServiceGrpc.DummyServiceFutureStub asyncClient = DummyServiceGrpc.newFutureStub(channel);
-        GreetServiceGrpc.GreetServiceBlockingStub greetClient = GreetServiceGrpc.newBlockingStub(channel);
+    public void run() {
+        // doUnaryCall();
+        // doServerStreamingCall();
+        doClientStreamingCall();
 
-        Greeting greeting = Greeting.newBuilder()
-                .setFirstName("Eunsang")
-                .setLastName("Jeon")
-                .build();
+        System.out.print("Shutting down channel");
+        channel.shutdown();
+    }
 
+    private void doUnaryCall() {
+        // unary
         GreetRequest greetRequest = GreetRequest.newBuilder()
                 .setGreeting(greeting)
                 .build();
 
-        GreetResponse greetResponse = greetClient.greet(greetRequest);
+        GreetResponse greetResponse = greetSyncClient.greet(greetRequest);
         System.out.println(greetResponse.getResult());
+    }
 
-        System.out.print("Shutting down channel");
-        channel.shutdown();
+    private void doServerStreamingCall(){
+        // server streaming
+        GreetManyTimesRequest greetManyTimesRequest = GreetManyTimesRequest.newBuilder()
+                .setGreeting(greeting)
+                .build();
+
+        greetSyncClient.greetManyTimes(greetManyTimesRequest)
+                .forEachRemaining(greetManyTimesResponse -> {
+                    System.out.println(greetManyTimesResponse.getResult());
+                });
+    }
+
+    private void doClientStreamingCall() {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        StreamObserver<LongGreetRequest> requestObserver =
+                greetAsyncClient.longGreet(new StreamObserver<LongGreetResponse>() {
+            @Override
+            public void onNext(LongGreetResponse value) {
+                System.out.println("Received a response from the server:");
+                System.out.println(value.getResult());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                System.out.println("Server error");
+            }
+
+            @Override
+            public void onCompleted() {
+                System.out.println("Server stopped sending messages");
+                latch.countDown();
+            }
+        });
+
+        System.out.println("sending message");
+        requestObserver.onNext(
+                LongGreetRequest.newBuilder()
+                    .setGreeting(
+                            Greeting.newBuilder()
+                                    .setFirstName("John")
+                                    .setLastName("Lennon")
+                                    .build()
+                    )
+                    .build()
+        );
+
+        System.out.println("sending message");
+        requestObserver.onNext(
+                LongGreetRequest.newBuilder()
+                    .setGreeting(
+                            Greeting.newBuilder()
+                                    .setFirstName("Paul")
+                                    .setLastName("McCartney")
+                                    .build()
+                    )
+                    .build()
+        );
+
+        System.out.println("sending message");
+        requestObserver.onNext(
+                LongGreetRequest.newBuilder()
+                    .setGreeting(
+                            Greeting.newBuilder()
+                                    .setFirstName("George")
+                                    .setLastName("Harrison")
+                                    .build()
+                    )
+                    .build()
+        );
+
+        System.out.println("sending message");
+        requestObserver.onNext(
+                LongGreetRequest.newBuilder()
+                    .setGreeting(
+                            Greeting.newBuilder()
+                                    .setFirstName("Ringo")
+                                    .setLastName("Starr")
+                                    .build()
+                    )
+                    .build()
+        );
+
+        System.out.println("sending message done");
+        requestObserver.onCompleted();
+
+        try {
+            latch.await(10L, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println("Hello I'm a gRPC client");
+
+        GreetingClient main = new GreetingClient();
+        main.run();
     }
 }
