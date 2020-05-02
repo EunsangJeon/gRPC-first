@@ -27,7 +27,8 @@ public class GreetingClient {
     public void run() {
         // doUnaryCall();
         // doServerStreamingCall();
-        doClientStreamingCall();
+        // doClientStreamingCall();
+        doBidiStreamingCall();
 
         System.out.print("Shutting down channel");
         channel.shutdown();
@@ -136,6 +137,89 @@ public class GreetingClient {
         }
     }
 
+    private void doBidiStreamingCall() {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        StreamObserver<GreetEveryoneRequest> requestObserver =
+            greetAsyncClient.greetEveryone(new StreamObserver<GreetEveryoneResponse>() {
+
+            @Override
+            public void onNext(GreetEveryoneResponse value) {
+                System.out.println("got server message");
+                System.out.println("MESSAGE: ");
+                System.out.println(value.getResult());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                System.out.println("got server error");
+                latch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                System.out.println("got server done");
+                latch.countDown();
+            }
+        });
+
+        System.out.println("sending message");
+        requestObserver.onNext(
+                GreetEveryoneRequest.newBuilder()
+                        .setGreeting(
+                                Greeting.newBuilder()
+                                        .setFirstName("John")
+                                        .setLastName("Lennon")
+                                        .build()
+                        )
+                        .build()
+        );
+
+        System.out.println("sending message");
+        requestObserver.onNext(
+                GreetEveryoneRequest.newBuilder()
+                        .setGreeting(
+                                Greeting.newBuilder()
+                                        .setFirstName("Paul")
+                                        .setLastName("McCartney")
+                                        .build()
+                        )
+                        .build()
+        );
+
+        System.out.println("sending message");
+        requestObserver.onNext(
+                GreetEveryoneRequest.newBuilder()
+                        .setGreeting(
+                                Greeting.newBuilder()
+                                        .setFirstName("George")
+                                        .setLastName("Harrison")
+                                        .build()
+                        )
+                        .build()
+        );
+
+        System.out.println("sending message");
+        requestObserver.onNext(
+                GreetEveryoneRequest.newBuilder()
+                        .setGreeting(
+                                Greeting.newBuilder()
+                                        .setFirstName("Ringo")
+                                        .setLastName("Starr")
+                                        .build()
+                        )
+                        .build()
+        );
+
+        System.out.println("sending message done");
+        requestObserver.onCompleted();
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
         System.out.println("Hello I'm a gRPC client");

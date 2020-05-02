@@ -29,17 +29,18 @@ public class AverageClient {
                 System.out.println("got server message");
 
                 System.out.println("Result: " + value.getResult());
-                countDownLatch.countDown();
             }
 
             @Override
             public void onError(Throwable t) {
                 System.out.println("got server error");
+                countDownLatch.countDown();
             }
 
             @Override
             public void onCompleted() {
                 System.out.println("terminated communication with server");
+                countDownLatch.countDown();
             }
         });
 
