@@ -18,6 +18,7 @@ gRPC is a modern open source high performance RPC framework that can run in any 
 - gRPC clients can be async or sync. Also clients can perform client side load balancing.
 - fun fact: Google has 10 BILLION gRPC requests being made per second internally(2020)
 - By default, gRPC strongly advocates for you to use SSL
+- example: google pub/sub and spanner
 
 
 ## Repo Content
@@ -88,3 +89,8 @@ catch (StatusRuntimeException e) {
 ## gRPC reflection
 
 - https://github.com/grpc/grpc-java/blob/master/documentation/server-reflection-tutorial.md
+
+## Useful Links
+
+- https://grpc.io/community/ 
+- https://grpc.io/docs/guides/
