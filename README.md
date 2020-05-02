@@ -72,7 +72,11 @@ responseObserver.onError {
 // ...
 catch (StatusRuntimeException e) {
     e.printStackTrace();
-    e.
 }
 // ...
 ```
+
+## Deadlines
+
+- The gRPC documentation recommends you to set a deadline for all client RPC calls.
+- https://grpc.io/blog/deadlines/

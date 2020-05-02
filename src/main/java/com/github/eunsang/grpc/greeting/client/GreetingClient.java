@@ -1,8 +1,7 @@
 package com.github.eunsang.grpc.greeting.client;
 
 import com.proto.greet.*;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import io.grpc.*;
 import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.CountDownLatch;
@@ -28,7 +27,8 @@ public class GreetingClient {
         // doUnaryCall();
         // doServerStreamingCall();
         // doClientStreamingCall();
-        doBidiStreamingCall();
+        // doBidiStreamingCall();
+        doUnaryCallWithDeadline();
 
         System.out.print("Shutting down channel");
         channel.shutdown();
@@ -218,6 +218,29 @@ public class GreetingClient {
             latch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void doUnaryCallWithDeadline() {
+        try {
+            GreetWithDeadlineResponse greetWithDeadlineResponse =  greetSyncClient
+                    .withDeadline(Deadline.after(10000, TimeUnit.MILLISECONDS))
+                    .greetWithDeadline(
+                            GreetWithDeadlineRequest.newBuilder()
+                                    .setGreeting(
+                                            Greeting.newBuilder()
+                                                    .setFirstName("Nick")
+                                                    .build()
+                                    )
+                                    .build()
+                    );
+            System.out.println(greetWithDeadlineResponse.getResult());
+        } catch (StatusRuntimeException e) {
+            if (e.getStatus() == Status.DEADLINE_EXCEEDED) {
+                System.out.println("Deadline exceeded");
+            } else {
+                e.printStackTrace();
+            }
         }
     }
 
