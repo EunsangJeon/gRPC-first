@@ -80,3 +80,11 @@ catch (StatusRuntimeException e) {
 
 - The gRPC documentation recommends you to set a deadline for all client RPC calls.
 - https://grpc.io/blog/deadlines/
+
+## Secure connections(SSL/TLS)
+
+- https://grpc.io/docs/guides/auth/
+
+## gRPC reflection
+
+- https://github.com/grpc/grpc-java/blob/master/documentation/server-reflection-tutorial.md
