@@ -53,3 +53,26 @@ gRPC is a modern open source high performance RPC framework that can run in any 
 - gradle > Tasks > other > generateProto on src/main/proto/dummy/dummy.proto
 - preferences > editor > mouse > you can set ctrl + wheel to manage size of fonts
 - You can install gradle packages on Gradle tab on the right side
+
+## Error Handling
+
+- https://grpc.io/docs/guides/error/
+- http://avi.im/grpc-errors/
+- Example(server):
+```
+responseObserver.onError {
+    Status.INVALID_ARGUMENT
+    .withDescription("The number being sent is not positive")
+        .augmentDescription("Number sent: " + number)
+    .asRuntimeException()
+};
+```
+- Example(client):
+```
+// ...
+catch (StatusRuntimeException e) {
+    e.printStackTrace();
+    e.
+}
+// ...
+```
